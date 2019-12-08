@@ -120,9 +120,7 @@ The generated code according to the above structure doesn't contain `bar` field.
 
 ## How to build binaries
 
-```
-$ make all VERSION=x.y.z
-```
+Binaries are built and uploaded by [goreleaser](https://goreleaser.com/). Please refer to the configuration file: [.goreleaser.yml](./.goreleaser.yml)
 
 ## Author
 
