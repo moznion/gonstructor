@@ -25,6 +25,7 @@ var (
 	output            = flag.String("output", "", `[optional] output file name (default "srcdir/<type>_gen.go")`)
 	constructorTypes  = flag.String("constructorTypes", allArgsConstructorType, fmt.Sprintf(`[optional] comma-separated list of constructor types; it expects "%s" and "%s"`, allArgsConstructorType, builderConstructorType))
 	shouldShowVersion = flag.Bool("version", false, "[optional] show the version information")
+	withGetter        = flag.Bool("withGetter", false, "[optional] generate a constructor along with getter functions for each field")
 )
 
 func main() {
@@ -92,6 +93,10 @@ func main() {
 			log.Fatalf("[error] unexpected constructor type has come [given=%s]", constructorType)
 		}
 		rootStmt = rootStmt.AddStatements(constructorGenerator.Generate())
+	}
+
+	if *withGetter {
+		rootStmt = rootStmt.AddStatements(internal.GenerateGetters(*typeName, fields))
 	}
 
 	code, err := rootStmt.EnableGoimports().EnableSyntaxChecking().Generate(0)

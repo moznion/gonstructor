@@ -2,7 +2,7 @@ package test
 
 import "io"
 
-//go:generate sh -c "$(cd ./\"$(git rev-parse --show-cdup)\" || exit; pwd)/dist/gonstructor_test --type=Structure --constructorTypes=allArgs,builder"
+//go:generate sh -c "$(cd ./\"$(git rev-parse --show-cdup)\" || exit; pwd)/dist/gonstructor_test --type=Structure --constructorTypes=allArgs,builder --withGetter"
 type Structure struct {
 	foo string
 	bar io.Reader

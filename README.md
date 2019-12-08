@@ -14,6 +14,8 @@ Usage of gonstructor:
         [mandatory] a type name
   -version
         [optional] show the version information
+  -withGetter
+        [optional] generate a constructor along with getter functions for each field
 ```
 
 ## Pre requirements to run

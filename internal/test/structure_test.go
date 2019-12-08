@@ -19,6 +19,12 @@ func TestStructureAllArgsConstructor(t *testing.T) {
 	assert.EqualValues(t, givenIOReader, got.bar)
 	assert.EqualValues(t, givenChan, got.Buz)
 	assert.EqualValues(t, nil, got.qux)
+
+	// test for getters
+	assert.EqualValues(t, givenString, got.GetFoo())
+	assert.EqualValues(t, givenIOReader, got.GetBar())
+	assert.EqualValues(t, givenChan, got.GetBuz())
+	assert.EqualValues(t, nil, got.GetQux())
 }
 
 func TestStructureBuilder(t *testing.T) {
