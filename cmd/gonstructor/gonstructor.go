@@ -22,6 +22,7 @@ import (
 const (
 	allArgsConstructorType = "allArgs"
 	builderConstructorType = "builder"
+	gonstructorTag         = "gonstructor"
 )
 
 var (
@@ -113,7 +114,7 @@ func generateAllArgsConstructor(typeName string, fields []*fieldForConstructor) 
 	items := make([]string, 0)
 
 	for _, field := range fields {
-		if field.ignoreOnConstructor {
+		if field.shouldIgnore {
 			continue
 		}
 		funcSignature = funcSignature.AddFuncParameters(g.NewFuncParameter(strcase.ToLowerCamel(field.fieldName), field.fieldType))
@@ -144,7 +145,7 @@ func generateBuilderConstructor(typeName string, fields []*fieldForConstructor) 
 	builderFieldFuncs := make([]*g.Func, 0)
 	items := make([]string, 0)
 	for _, field := range fields {
-		if field.ignoreOnBuilder {
+		if field.shouldIgnore {
 			continue
 		}
 		builderStruct = builderStruct.AddField(
@@ -243,34 +244,25 @@ func extractFieldsForConstructorFromASTs(typeName string, astFiles []*ast.File) 
 	return nil, fmt.Errorf("there is no suitable struct that matches given typeName [given=%s]", typeName)
 }
 
-const (
-	constructorTag = "constructor"
-	builderTag     = "builder"
-)
-
 type fieldForConstructor struct {
-	fieldName           string
-	fieldType           string
-	ignoreOnConstructor bool
-	ignoreOnBuilder     bool
+	fieldName    string
+	fieldType    string
+	shouldIgnore bool
 }
 
 func correctFieldsForConstructor(fields []*ast.Field) []*fieldForConstructor {
 	fs := make([]*fieldForConstructor, 0)
 	for _, field := range fields {
-		ignoreOnConstructor := false
-		ignoreOnBuilder := false
+		shouldIgnore := false
 		if field.Tag != nil && len(field.Tag.Value) >= 1 {
 			customTag := reflect.StructTag(field.Tag.Value[1 : len(field.Tag.Value)-1])
-			ignoreOnConstructor = customTag.Get(constructorTag) == "-"
-			ignoreOnBuilder = customTag.Get(builderTag) == "-"
+			shouldIgnore = customTag.Get(gonstructorTag) == "-"
 		}
 
 		fs = append(fs, &fieldForConstructor{
-			fieldName:           field.Names[0].Name,
-			fieldType:           types.ExprString(field.Type),
-			ignoreOnConstructor: ignoreOnConstructor,
-			ignoreOnBuilder:     ignoreOnBuilder,
+			fieldName:    field.Names[0].Name,
+			fieldType:    types.ExprString(field.Type),
+			shouldIgnore: shouldIgnore,
 		})
 	}
 	return fs

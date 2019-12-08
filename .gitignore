@@ -13,4 +13,4 @@
 
 /bin/*
 !/bin/.gitkeep
-
+/internal/test/*_gen.go
