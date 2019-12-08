@@ -21,13 +21,19 @@ const (
 )
 
 var (
-	typeName         = flag.String("type", "", "[mandatory] a type name")
-	output           = flag.String("output", "", "[optional] output file name; default srcdir/<type>_gen.go")
-	constructorTypes = flag.String("constructorTypes", allArgsConstructorType, fmt.Sprintf("[optional] comma-separated list of constructor types; it expects `%s` and `%s`", allArgsConstructorType, builderConstructorType))
+	typeName          = flag.String("type", "", "[mandatory] a type name")
+	output            = flag.String("output", "", "[optional] output file name; default srcdir/<type>_gen.go")
+	constructorTypes  = flag.String("constructorTypes", allArgsConstructorType, fmt.Sprintf("[optional] comma-separated list of constructor types; it expects `%s` and `%s`", allArgsConstructorType, builderConstructorType))
+	shouldShowVersion = flag.Bool("version", false, "[optional] show the version information")
 )
 
 func main() {
 	flag.Parse()
+
+	if *shouldShowVersion {
+		internal.ShowVersion()
+		return
+	}
 
 	if *typeName == "" {
 		flag.Usage()
