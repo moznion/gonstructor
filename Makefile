@@ -10,6 +10,7 @@ build4test: clean
 	go build -o bin/gonstructor cmd/gonstructor/gonstructor.go
 
 gen4test: build4test
+	rm -f internal/test/*_gen.go
 	go generate $(PKGS)
 
 test: gen4test

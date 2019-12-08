@@ -10,7 +10,7 @@ type Structure struct {
 	qux interface{} `gonstructor:"-"`
 }
 
-//go:generate sh -c "$(cd ./\"$(git rev-parse --show-cdup)\" || exit; pwd)/bin/gonstructor --type=ChildStructure"
+//go:generate sh -c "$(cd ./\"$(git rev-parse --show-cdup)\" || exit; pwd)/bin/gonstructor --type=ChildStructure --output=./super_duper_child_structure_gen.go"
 type ChildStructure struct {
 	structure *Structure
 	foobar    string
