@@ -7,16 +7,19 @@ import (
 	"go/token"
 )
 
+// FileParser is a parser of go files to get AST.
 type FileParser struct {
 	astCache map[string]*ast.File
 }
 
+// NewFileParser is a constructor of FileParser.
 func NewFileParser() *FileParser {
 	return &FileParser{
 		astCache: make(map[string]*ast.File),
 	}
 }
 
+// Parse parses a file to get AST.
 func (p *FileParser) Parse(files []string) ([]*ast.File, error) {
 	fset := token.NewFileSet()
 

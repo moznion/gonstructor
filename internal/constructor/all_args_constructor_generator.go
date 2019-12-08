@@ -8,11 +8,13 @@ import (
 	g "github.com/moznion/gowrtr/generator"
 )
 
+// AllArgsConstructorGenerator is a struct type that has the responsibility to generate a statement of a constructor with all of arguments.
 type AllArgsConstructorGenerator struct {
 	TypeName string
 	Fields   []*Field
 }
 
+// Generate generates a constructor statement with all of arguments.
 func (cg *AllArgsConstructorGenerator) Generate() g.Statement {
 	funcSignature := g.NewFuncSignature(fmt.Sprintf("New%s", strcase.ToCamel(cg.TypeName)))
 

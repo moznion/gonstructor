@@ -78,7 +78,7 @@ func main() {
 				Fields:   fields,
 			}
 		case builderConstructorType:
-			constructorGenerator = &constructor.BuilderConstructorGenerator{
+			constructorGenerator = &constructor.BuilderGenerator{
 				TypeName: *typeName,
 				Fields:   fields,
 			}

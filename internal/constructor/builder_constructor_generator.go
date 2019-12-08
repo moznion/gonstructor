@@ -8,12 +8,14 @@ import (
 	g "github.com/moznion/gowrtr/generator"
 )
 
-type BuilderConstructorGenerator struct {
+// BuilderGenerator is a struct type that has the responsibility to generate a statement of a builder.
+type BuilderGenerator struct {
 	TypeName string
 	Fields   []*Field
 }
 
-func (cg *BuilderConstructorGenerator) Generate() g.Statement {
+// Generate generates a builder statement.
+func (cg *BuilderGenerator) Generate() g.Statement {
 	builderConstructorName := fmt.Sprintf("New%sBuilder", strcase.ToCamel(cg.TypeName))
 	builderType := fmt.Sprintf("%sBuilder", strcase.ToCamel(cg.TypeName))
 
