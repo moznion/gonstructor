@@ -1,0 +1,39 @@
+project_name: gonstructor
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  -
+    main: ./cmd/gonstructor/gonstructor.go
+    ldflags:
+    - "-X github.com/moznion/gonstructor/internal.rev={{ .FullCommit }}"
+    - "-X github.com/moznion/gonstructor/internal.ver={{ .Version }}"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - 386
+      - amd64
+      - arm
+      - arm64
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+changelog:
+  sort: desc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+    - '^:pencil:'
+
