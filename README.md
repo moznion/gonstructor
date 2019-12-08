@@ -18,6 +18,14 @@ Usage of gonstructor:
         [optional] generate a constructor along with getter functions for each field
 ```
 
+## Motivation
+
+Data encapsulation is a good practice to make software, and it is necessary to clearly indicate the boundary of the structure by controlling the accessibility of the data fields (i.e. private or public) for that. Basically keeping the data fields be private and immutable would be good to make software be robust because it can avoid unexpected field changing.
+
+Golang has a simple way to do that by choosing the initial character's type: upper case or lower case. Once it has decided to use a field as private, it needs to make something like a constructor function, but golang doesn't have a mechanism to support constructor now.
+
+Therefore this project aims to automatically generate constructors to use structures with private and immutable, easily.
+
 ## Pre requirements to run
 
 - [goimports](https://godoc.org/golang.org/x/tools/cmd/goimports)
