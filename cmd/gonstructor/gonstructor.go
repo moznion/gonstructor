@@ -51,8 +51,7 @@ func main() {
 		log.Fatal(fmt.Errorf("[error] failed to parse a package: %w", err))
 	}
 
-	fileParser := internal.NewFileParser()
-	astFiles, err := fileParser.Parse(pkg.GoFiles)
+	astFiles, err := internal.ParseFiles(pkg.GoFiles)
 	if err != nil {
 		log.Fatal(fmt.Errorf("[error] failed to parse a file: %w", err))
 	}
