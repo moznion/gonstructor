@@ -39,9 +39,6 @@ endif
 	go build -ldflags "-X $(INTERNAL_PACKAGE).rev=$(REVISION) -X $(INTERNAL_PACKAGE).ver=$(VERSION)" \
 		-o $(RELEASE_DIR)/gonstructor_$(GOOS)_$(GOARCH)_$(VERSION) cmd/gonstructor/gonstructor.go
 
-clean:
-	rm -rf bin/gonstructor*
-
 build4test: clean
 	go build -ldflags "-X $(INTERNAL_PACKAGE).rev=$(REVISION) -X $(INTERNAL_PACKAGE).ver=TESTING" \
 		-o $(RELEASE_DIR)/gonstructor_test cmd/gonstructor/gonstructor.go
@@ -70,4 +67,7 @@ fmt-check:
 fmt:
 	gofmt -w -s **/*.go
 	goimports -w **/*.go
+
+clean:
+	rm -rf bin/gonstructor*
 
