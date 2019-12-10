@@ -35,20 +35,20 @@ func (cg *BuilderGenerator) Generate() g.Statement {
 		}
 
 		builderStruct = builderStruct.AddField(
-			strcase.ToLowerCamel(field.FieldName),
+			toLowerCamel(field.FieldName),
 			field.FieldType,
 		)
 
 		fieldRegistererFunctions = append(fieldRegistererFunctions, g.NewFunc(
 			g.NewFuncReceiver("b", "*"+builderType),
 			g.NewFuncSignature(strcase.ToCamel(field.FieldName)).
-				AddFuncParameters(g.NewFuncParameter(strcase.ToLowerCamel(field.FieldName), field.FieldType)).
+				AddFuncParameters(g.NewFuncParameter(toLowerCamel(field.FieldName), field.FieldType)).
 				AddReturnTypes("*"+builderType),
-			g.NewRawStatement(fmt.Sprintf("b.%s = %s", strcase.ToLowerCamel(field.FieldName), strcase.ToLowerCamel(field.FieldName))),
+			g.NewRawStatement(fmt.Sprintf("b.%s = %s", toLowerCamel(field.FieldName), strcase.ToLowerCamel(field.FieldName))),
 			g.NewReturnStatement("b"),
 		))
 
-		retStructureKeyValues = append(retStructureKeyValues, fmt.Sprintf("%s: b.%s", field.FieldName, strcase.ToLowerCamel(field.FieldName)))
+		retStructureKeyValues = append(retStructureKeyValues, fmt.Sprintf("%s: b.%s", field.FieldName, toLowerCamel(field.FieldName)))
 	}
 
 	buildFunc := g.NewFunc(
