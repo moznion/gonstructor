@@ -2,6 +2,12 @@
 
 A command-line tool to generate a constructor for the struct.
 
+## Install
+
+```
+go get github.com/moznion/gonstructor/cmd/gonstructor
+```
+
 ## Usage
 
 ```
