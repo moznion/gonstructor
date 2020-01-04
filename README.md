@@ -2,11 +2,13 @@
 
 A command-line tool to generate a constructor for the struct.
 
-## Install
+## Installation
 
 ```
-go get github.com/moznion/gonstructor/cmd/gonstructor
+$ go get -u github.com/moznion/gonstructor/cmd/gonstructor
 ```
+
+also you can get the pre-built binaries on [Releases](https://github.com/moznion/gonstructor/releases).
 
 ## Usage
 
@@ -119,10 +121,6 @@ type Structure struct {
 ```
 
 The generated code according to the above structure doesn't contain `bar` field.
-
-## Where are pre-built binaries
-
-[Releases](https://github.com/moznion/gonstructor/releases)
 
 ## How to build binaries
 
