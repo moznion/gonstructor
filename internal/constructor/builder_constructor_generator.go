@@ -42,7 +42,7 @@ func (cg *BuilderGenerator) Generate() g.Statement {
 		fieldRegistererFunctions = append(fieldRegistererFunctions, g.NewFunc(
 			g.NewFuncReceiver("b", "*"+builderType),
 			g.NewFuncSignature(strcase.ToCamel(field.FieldName)).
-				AddFuncParameters(g.NewFuncParameter(strcase.ToLowerCamel(field.FieldName), field.FieldType)).
+				AddParameters(g.NewFuncParameter(strcase.ToLowerCamel(field.FieldName), field.FieldType)).
 				AddReturnTypes("*"+builderType),
 			g.NewRawStatement(fmt.Sprintf("b.%s = %s", strcase.ToLowerCamel(field.FieldName), strcase.ToLowerCamel(field.FieldName))),
 			g.NewReturnStatement("b"),

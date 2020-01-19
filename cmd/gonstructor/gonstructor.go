@@ -99,7 +99,7 @@ func main() {
 		rootStmt = rootStmt.AddStatements(internal.GenerateGetters(*typeName, fields))
 	}
 
-	code, err := rootStmt.EnableGoimports().EnableSyntaxChecking().Generate(0)
+	code, err := rootStmt.Goimports().EnableSyntaxChecking().Generate(0)
 	if err != nil {
 		log.Fatal(fmt.Errorf("[error] failed to generate code: %w", err))
 	}

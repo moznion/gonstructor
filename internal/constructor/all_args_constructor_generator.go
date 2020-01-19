@@ -23,7 +23,7 @@ func (cg *AllArgsConstructorGenerator) Generate() g.Statement {
 		if field.ShouldIgnore {
 			continue
 		}
-		funcSignature = funcSignature.AddFuncParameters(g.NewFuncParameter(strcase.ToLowerCamel(field.FieldName), field.FieldType))
+		funcSignature = funcSignature.AddParameters(g.NewFuncParameter(strcase.ToLowerCamel(field.FieldName), field.FieldType))
 		retStructureKeyValues = append(retStructureKeyValues, fmt.Sprintf("%s: %s", field.FieldName, strcase.ToLowerCamel(field.FieldName)))
 	}
 
