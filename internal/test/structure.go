@@ -15,3 +15,14 @@ type ChildStructure struct {
 	structure *Structure
 	foobar    string
 }
+
+//go:generate sh -c "$(cd ./\"$(git rev-parse --show-cdup)\" || exit; pwd)/dist/gonstructor_test --type=StructureWithInit --constructorTypes=allArgs,builder --withGetter --init initialize"
+type StructureWithInit struct {
+	foo    string
+	status string      `gonstructor:"-"`
+	qux    interface{} `gonstructor:"-"`
+}
+
+func (structure *StructureWithInit) initialize() {
+	structure.status = "ok"
+}

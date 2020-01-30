@@ -16,6 +16,8 @@ also you can get the pre-built binaries on [Releases](https://github.com/moznion
 Usage of gonstructor:
   -constructorTypes string
         [optional] comma-separated list of constructor types; it expects "allArgs" and "builder" (default "allArgs")
+  -init string
+        [optional] name of function to call on object after creating it
   -output string
         [optional] output file name (default "srcdir/<type>_gen.go")
   -type string
@@ -107,6 +109,42 @@ func (b *StructureBuilder) Build() *Structure {
 }
 ```
 
+### Call a initializer
+
+1. write a struct type with `go:generate`
+2. write a function that initializes internal fields
+3. pass its name to `-init` parameter
+
+e.g.
+
+```go
+//go:generate gonstructor --type=Structure -init construct
+type Structure struct {
+	foo        string
+	bar        io.Reader
+	Buz        chan interface{}
+	bufferSize int
+	buffer     chan []byte `gonstructor:"-"`
+}
+
+func (structure *Structure) construct() {
+	structure.buffer = make(chan []byte, structure.bufferSize)
+}
+```
+
+2. execute `go generate ./...`
+3. then `gonstructor` generates a buildr code
+
+e.g.
+
+```go
+func NewStructure(foo string, bar io.Reader, buz chan interface{}, bufferSize int) *Structure {
+        r := &Structure{foo: foo, bar: bar, Buz: buz, bufferSize: bufferSize}
+        r.construct()
+        return r
+}
+```
+
 ## How to ignore to contain a field in a constructor
 
 `gonstructor:"-"` supports that.
@@ -129,4 +167,3 @@ Binaries are built and uploaded by [goreleaser](https://goreleaser.com/). Please
 ## Author
 
 moznion (<moznion@gmail.com>)
-

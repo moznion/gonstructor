@@ -26,6 +26,7 @@ var (
 	constructorTypes  = flag.String("constructorTypes", allArgsConstructorType, fmt.Sprintf(`[optional] comma-separated list of constructor types; it expects "%s" and "%s"`, allArgsConstructorType, builderConstructorType))
 	shouldShowVersion = flag.Bool("version", false, "[optional] show the version information")
 	withGetter        = flag.Bool("withGetter", false, "[optional] generate a constructor along with getter functions for each field")
+	initFunc          = flag.String("init", "", "[optional] name of function to call on object after creating it")
 )
 
 func main() {
@@ -82,11 +83,13 @@ func main() {
 			constructorGenerator = &constructor.AllArgsConstructorGenerator{
 				TypeName: *typeName,
 				Fields:   fields,
+				InitFunc: *initFunc,
 			}
 		case builderConstructorType:
 			constructorGenerator = &constructor.BuilderGenerator{
 				TypeName: *typeName,
 				Fields:   fields,
+				InitFunc: *initFunc,
 			}
 		default:
 			// unreachable, just in case

@@ -12,6 +12,7 @@ import (
 type BuilderGenerator struct {
 	TypeName string
 	Fields   []*Field
+	InitFunc string
 }
 
 // Generate generates a builder statement.
@@ -51,11 +52,25 @@ func (cg *BuilderGenerator) Generate() g.Statement {
 		retStructureKeyValues = append(retStructureKeyValues, fmt.Sprintf("%s: b.%s", field.FieldName, strcase.ToLowerCamel(field.FieldName)))
 	}
 
+	buildResult := fmt.Sprintf("&%s{%s}", cg.TypeName, strings.Join(retStructureKeyValues, ","))
+
+	var buildStmts []g.Statement
+	if cg.InitFunc != "" {
+		buildStmts = append(buildStmts, g.NewRawStatementf("r := %s", buildResult))
+		buildStmts = append(buildStmts, g.NewRawStatementf("r.%s()", cg.InitFunc))
+		buildStmts = append(buildStmts, g.NewReturnStatement("r"))
+	} else {
+		buildStmts = append(
+			buildStmts,
+			g.NewReturnStatement(buildResult),
+		)
+	}
+
 	buildFunc := g.NewFunc(
 		g.NewFuncReceiver("b", "*"+builderType),
 		g.NewFuncSignature("Build").
 			AddReturnTypes("*"+cg.TypeName),
-		g.NewReturnStatement(fmt.Sprintf("&%s{%s}", cg.TypeName, strings.Join(retStructureKeyValues, ","))),
+		buildStmts...,
 	)
 
 	stmt := g.NewRoot(builderStruct, builderConstructorFunc)

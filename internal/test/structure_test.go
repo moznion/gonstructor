@@ -55,3 +55,32 @@ func TestChildStructureAllArgsConstructor(t *testing.T) {
 	assert.EqualValues(t, structure, got.structure)
 	assert.EqualValues(t, givenString, got.foobar)
 }
+
+func TestStructureWithInitAllArgsConstructor(t *testing.T) {
+	givenString := "givenstr"
+
+	got := NewStructureWithInit(givenString)
+	assert.IsType(t, &StructureWithInit{}, got)
+
+	assert.EqualValues(t, givenString, got.foo)
+	assert.EqualValues(t, "ok", got.status)
+	assert.EqualValues(t, nil, got.qux)
+
+	// test for getters
+	assert.EqualValues(t, givenString, got.GetFoo())
+	assert.EqualValues(t, "ok", got.GetStatus())
+	assert.EqualValues(t, nil, got.GetQux())
+}
+
+func TestStructureWithInitBuilder(t *testing.T) {
+	givenString := "givenstr"
+
+	b := NewStructureWithInitBuilder()
+	got := b.Foo(givenString).
+		Build()
+	assert.IsType(t, &StructureWithInit{}, got)
+
+	assert.EqualValues(t, givenString, got.foo)
+	assert.EqualValues(t, "ok", got.status)
+	assert.EqualValues(t, nil, got.qux)
+}
