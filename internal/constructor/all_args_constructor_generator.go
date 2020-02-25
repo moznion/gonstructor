@@ -12,6 +12,7 @@ import (
 type AllArgsConstructorGenerator struct {
 	TypeName string
 	Fields   []*Field
+	InitFunc string
 }
 
 // Generate generates a constructor statement with all of arguments.
@@ -29,9 +30,25 @@ func (cg *AllArgsConstructorGenerator) Generate() g.Statement {
 
 	funcSignature = funcSignature.AddReturnTypes("*" + cg.TypeName)
 
-	return g.NewFunc(
+	retStructure := fmt.Sprintf("&%s{%s}", cg.TypeName, strings.Join(retStructureKeyValues, ","))
+
+	var stmts []g.Statement
+	if cg.InitFunc != "" {
+		stmts = []g.Statement{
+			g.NewRawStatementf("r := %s", retStructure),
+			g.NewRawStatementf("r.%s()", cg.InitFunc),
+			g.NewReturnStatement("r"),
+		}
+	} else {
+		stmts = []g.Statement{
+			g.NewReturnStatement(retStructure),
+		}
+	}
+
+	fn := g.NewFunc(
 		nil,
 		funcSignature,
-		g.NewReturnStatement(fmt.Sprintf("&%s{%s}", cg.TypeName, strings.Join(retStructureKeyValues, ","))),
+		stmts...,
 	)
+	return fn
 }
