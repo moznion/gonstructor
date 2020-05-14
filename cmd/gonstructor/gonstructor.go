@@ -85,17 +85,20 @@ func main() {
 				Fields:   fields,
 				InitFunc: *initFunc,
 			}
+
 		case builderConstructorType:
 			constructorGenerator = &constructor.BuilderGenerator{
 				TypeName: *typeName,
 				Fields:   fields,
 				InitFunc: *initFunc,
 			}
+
 		default:
 			// unreachable, just in case
 			log.Fatalf("[error] unexpected constructor type has come [given=%s]", constructorType)
 		}
-		rootStmt = rootStmt.AddStatements(constructorGenerator.Generate())
+
+		rootStmt = rootStmt.AddStatements(constructorGenerator.Generate(0))
 	}
 
 	if *withGetter {

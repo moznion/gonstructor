@@ -1,10 +1,10 @@
 module github.com/moznion/gonstructor
 
-go 1.13
+go 1.14
 
 require (
-	github.com/iancoleman/strcase v0.0.0-20180726023541-3605ed457bf7
-	github.com/moznion/gowrtr v1.4.0
-	github.com/stretchr/testify v1.3.0
-	golang.org/x/tools v0.0.0-20191206204035-259af5ff87bd
+	github.com/iancoleman/strcase v0.0.0-20191112232945-16388991a334
+	github.com/moznion/gowrtr v1.5.0
+	github.com/stretchr/testify v1.6.0
+	golang.org/x/tools v0.0.0-20200530233709-52effbd89c51
 )

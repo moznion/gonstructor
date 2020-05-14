@@ -89,23 +89,44 @@ type Structure struct {
 e.g.
 
 ```go
+type StructureBuilder struct {
+	foo        string
+	bar        io.Reader
+	buz        chan interface{}
+	bufferSize int
+}
+
 func NewStructureBuilder() *StructureBuilder {
 	return &StructureBuilder{}
 }
+
 func (b *StructureBuilder) Foo(foo string) *StructureBuilder {
 	b.foo = foo
 	return b
 }
+
 func (b *StructureBuilder) Bar(bar io.Reader) *StructureBuilder {
 	b.bar = bar
 	return b
 }
+
 func (b *StructureBuilder) Buz(buz chan interface{}) *StructureBuilder {
 	b.buz = buz
 	return b
 }
+
+func (b *StructureBuilder) BufferSize(bufferSize int) *StructureBuilder {
+	b.bufferSize = bufferSize
+	return b
+}
+
 func (b *StructureBuilder) Build() *Structure {
-	return &Structure{foo: b.foo, bar: b.bar, Buz: b.buz}
+	return &Structure{
+		foo:        b.foo,
+		bar:        b.bar,
+		Buz:        b.buz,
+		bufferSize: b.bufferSize,
+	}
 }
 ```
 
@@ -138,10 +159,22 @@ func (structure *Structure) construct() {
 e.g.
 
 ```go
-func NewStructure(foo string, bar io.Reader, buz chan interface{}, bufferSize int) *Structure {
-        r := &Structure{foo: foo, bar: bar, Buz: buz, bufferSize: bufferSize}
-        r.construct()
-        return r
+func NewStructure(
+	foo string,
+	bar io.Reader,
+	buz chan interface{},
+	bufferSize int,
+) *Structure {
+	r := &Structure{
+		foo:        foo,
+		bar:        bar,
+		Buz:        buz,
+		bufferSize: bufferSize,
+	}
+
+	r.construct()
+
+	return r
 }
 ```
 

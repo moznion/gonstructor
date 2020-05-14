@@ -13,3 +13,5 @@
 
 /internal/test/*_gen.go
 /dist/
+
+/gonstructor
