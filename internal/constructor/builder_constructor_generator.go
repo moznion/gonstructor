@@ -2,7 +2,6 @@ package constructor
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/iancoleman/strcase"
 	g "github.com/moznion/gowrtr/generator"
@@ -16,7 +15,7 @@ type BuilderGenerator struct {
 }
 
 // Generate generates a builder statement.
-func (cg *BuilderGenerator) Generate() g.Statement {
+func (cg *BuilderGenerator) Generate(indentLevel int) g.Statement {
 	builderConstructorName := fmt.Sprintf("New%sBuilder", strcase.ToCamel(cg.TypeName))
 	builderType := fmt.Sprintf("%sBuilder", strcase.ToCamel(cg.TypeName))
 
@@ -52,7 +51,7 @@ func (cg *BuilderGenerator) Generate() g.Statement {
 		retStructureKeyValues = append(retStructureKeyValues, fmt.Sprintf("%s: b.%s", field.FieldName, toLowerCamel(field.FieldName)))
 	}
 
-	buildResult := fmt.Sprintf("&%s{%s}", cg.TypeName, strings.Join(retStructureKeyValues, ","))
+	buildResult := generateStructure(cg.TypeName, retStructureKeyValues, indentLevel+1)
 
 	var buildStmts []g.Statement
 	if cg.InitFunc != "" {
@@ -75,7 +74,7 @@ func (cg *BuilderGenerator) Generate() g.Statement {
 
 	stmt := g.NewRoot(builderStruct, builderConstructorFunc)
 	for _, f := range fieldRegistererFunctions {
-		stmt = stmt.AddStatements(f)
+		stmt = stmt.AddStatements(g.NewNewline(), f)
 	}
-	return stmt.AddStatements(buildFunc)
+	return stmt.AddStatements(g.NewNewline(), buildFunc)
 }
