@@ -8,7 +8,13 @@ A command-line tool to generate a constructor for the struct.
 $ go get -u github.com/moznion/gonstructor/cmd/gonstructor
 ```
 
-also you can get the pre-built binaries on [Releases](https://github.com/moznion/gonstructor/releases).
+Also, you can get the pre-built binaries on [Releases](https://github.com/moznion/gonstructor/releases).
+
+Or get it with [gobinaries.com](https://gobinaries.com):
+
+```bash
+curl -sf https://gobinaries.com/moznion/gonstructor | sh
+```
 
 ## Usage
 
