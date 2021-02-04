@@ -26,19 +26,3 @@ type StructureWithInit struct {
 func (structure *StructureWithInit) initialize() {
 	structure.status = "ok"
 }
-
-type Embedded struct {
-	Bar string
-}
-
-//go:generate sh -c "$(cd ./\"$(git rev-parse --show-cdup)\" || exit; pwd)/dist/gonstructor_test --type=StructureWithEmbedding --constructorTypes=allArgs,builder --withGetter"
-type StructureWithEmbedding struct {
-	Embedded
-	foo string
-}
-
-//go:generate sh -c "$(cd ./\"$(git rev-parse --show-cdup)\" || exit; pwd)/dist/gonstructor_test --type=StructureWithPointerEmbedding --constructorTypes=allArgs,builder --withGetter"
-type StructureWithPointerEmbedding struct {
-	*Embedded
-	foo string
-}
