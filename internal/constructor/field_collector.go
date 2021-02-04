@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/types"
 	"reflect"
+	"strings"
 )
 
 const gonstructorTag = "gonstructor"
@@ -51,9 +52,22 @@ func convertStructFieldsToConstructorOnes(fields []*ast.Field) []*Field {
 			shouldIgnore = customTag.Get(gonstructorTag) == "-"
 		}
 
+		fieldType := types.ExprString(field.Type)
+
+		var fieldName string
+		if len(field.Names) > 0 {
+			fieldName = field.Names[0].Name
+		} else {
+			// split 'mypackage.MyType'
+			chunks := strings.Split(fieldType, ".")
+
+			// it could be a pointer: '*mypackage.MyType' or '*MyType'
+			fieldName = strings.TrimPrefix(chunks[len(chunks)-1], "*")
+		}
+
 		fs[i] = &Field{
-			FieldName:    field.Names[0].Name,
-			FieldType:    types.ExprString(field.Type),
+			FieldName:    fieldName,
+			FieldType:    fieldType,
 			ShouldIgnore: shouldIgnore,
 		}
 	}
