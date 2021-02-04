@@ -84,3 +84,49 @@ func TestStructureWithInitBuilder(t *testing.T) {
 	assert.EqualValues(t, "ok", got.status)
 	assert.EqualValues(t, nil, got.qux)
 }
+
+func TestStructureWithEmbeddingAllArgsConstructor(t *testing.T) {
+	got := NewStructureWithEmbedding(Embedded{Bar: "bar"}, "foo")
+	assert.IsType(t, &StructureWithEmbedding{}, got)
+
+	assert.EqualValues(t, "foo", got.foo)
+	assert.EqualValues(t, "bar", got.Bar)
+	assert.EqualValues(t, "bar", got.Embedded.Bar)
+
+	// test for getters
+	assert.EqualValues(t, "foo", got.GetFoo())
+	assert.EqualValues(t, "bar", got.GetEmbedded().Bar)
+}
+
+func TestStructureWithEmbeddingBuilder(t *testing.T) {
+	b := NewStructureWithEmbeddingBuilder()
+	got := b.Foo("foo").Embedded(Embedded{Bar: "bar"}).Build()
+	assert.IsType(t, &StructureWithEmbedding{}, got)
+
+	assert.EqualValues(t, "foo", got.foo)
+	assert.EqualValues(t, "bar", got.Bar)
+	assert.EqualValues(t, "bar", got.Embedded.Bar)
+}
+
+func TestStructureWithPointerEmbeddingAllArgsConstructor(t *testing.T) {
+	got := NewStructureWithPointerEmbedding(Embedded{Bar: "bar"}, "foo")
+	assert.IsType(t, &StructureWithPointerEmbedding{}, got)
+
+	assert.EqualValues(t, "foo", got.foo)
+	assert.EqualValues(t, "bar", got.Bar)
+	assert.EqualValues(t, "bar", got.Embedded.Bar)
+
+	// test for getters
+	assert.EqualValues(t, "foo", got.GetFoo())
+	assert.EqualValues(t, "bar", got.GetEmbedded().Bar)
+}
+
+func TestStructureWithPointerEmbeddingBuilder(t *testing.T) {
+	b := NewStructureWithPointerEmbeddingBuilder()
+	got := b.Foo("foo").Embedded(Embedded{Bar: "bar"}).Build()
+	assert.IsType(t, &StructureWithPointerEmbedding{}, got)
+
+	assert.EqualValues(t, "foo", got.foo)
+	assert.EqualValues(t, "bar", got.Bar)
+	assert.EqualValues(t, "bar", got.Embedded.Bar)
+}
