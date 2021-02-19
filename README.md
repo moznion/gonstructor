@@ -16,6 +16,14 @@ Or get it with [gobinaries.com](https://gobinaries.com):
 curl -sf https://gobinaries.com/moznion/gonstructor | sh
 ```
 
+## Dependencies
+
+gonstructor depends on [goimports](https://pkg.go.dev/golang.org/x/tools/cmd/goimports) for fixing import paths and formatting code, you need to install it:
+
+```
+$ go get golang.org/x/tools/cmd/goimports
+```
+
 ## Usage
 
 ```
