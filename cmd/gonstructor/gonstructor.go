@@ -38,6 +38,7 @@ func main() {
 	shouldShowVersion := flag.Bool("version", false, "[optional] show the version information")
 	withGetter := flag.Bool("withGetter", false, "[optional] generate a constructor along with getter functions for each field")
 	initFunc := flag.String("init", "", "[optional] name of function to call on object after creating it")
+	propagateInitFuncReturns := flag.Bool("propagateInitFuncReturns", false, `[optional] If this option is specified, the generated constructor propagates the return values that come from the init function specified by the "-init" option, e.g. when the init function returns an "error" value, the generated constructor returns (*YourStructType, error).`)
 
 	flag.Parse()
 
@@ -85,6 +86,14 @@ func main() {
 			log.Fatal(fmt.Errorf("[error] failed to collect fields from files: %w", err))
 		}
 
+		var initFuncReturnTypes []string
+		if *initFunc != "" {
+			initFuncReturnTypes, err = constructor.CollectInitFuncReturnTypes(typeName, *initFunc, astFiles)
+			if err != nil {
+				log.Fatal(fmt.Errorf("[error] failed to collect the return types of the init func: %w", err))
+			}
+		}
+
 		rootStmt := g.NewRoot()
 
 		if !fileHeaderGenerated {
@@ -102,16 +111,20 @@ func main() {
 			switch constructorType {
 			case allArgsConstructorType:
 				constructorGenerator = &constructor.AllArgsConstructorGenerator{
-					TypeName: typeName,
-					Fields:   fields,
-					InitFunc: *initFunc,
+					TypeName:                 typeName,
+					Fields:                   fields,
+					InitFunc:                 *initFunc,
+					InitFuncReturnTypes:      initFuncReturnTypes,
+					PropagateInitFuncReturns: *propagateInitFuncReturns,
 				}
 
 			case builderConstructorType:
 				constructorGenerator = &constructor.BuilderGenerator{
-					TypeName: typeName,
-					Fields:   fields,
-					InitFunc: *initFunc,
+					TypeName:                 typeName,
+					Fields:                   fields,
+					InitFunc:                 *initFunc,
+					InitFuncReturnTypes:      initFuncReturnTypes,
+					PropagateInitFuncReturns: *propagateInitFuncReturns,
 				}
 
 			default:

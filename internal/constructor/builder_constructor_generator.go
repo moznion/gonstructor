@@ -2,6 +2,7 @@ package constructor
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/iancoleman/strcase"
 	g "github.com/moznion/gowrtr/generator"
@@ -9,9 +10,11 @@ import (
 
 // BuilderGenerator is a struct type that has the responsibility to generate a statement of a builder.
 type BuilderGenerator struct {
-	TypeName string
-	Fields   []*Field
-	InitFunc string
+	TypeName                 string
+	Fields                   []*Field
+	InitFunc                 string
+	InitFuncReturnTypes      []string
+	PropagateInitFuncReturns bool
 }
 
 // Generate generates a builder statement.
@@ -56,8 +59,23 @@ func (cg *BuilderGenerator) Generate(indentLevel int) g.Statement {
 	var buildStmts []g.Statement
 	if cg.InitFunc != "" {
 		buildStmts = append(buildStmts, g.NewRawStatementf("r := %s", buildResult))
-		buildStmts = append(buildStmts, g.NewRawStatementf("r.%s()", cg.InitFunc))
-		buildStmts = append(buildStmts, g.NewReturnStatement("r"))
+
+		if cg.PropagateInitFuncReturns && len(cg.InitFuncReturnTypes) > 0 {
+			initFuncReturnValues := make([]string, len(cg.InitFuncReturnTypes))
+			for i := 0; i < len(cg.InitFuncReturnTypes); i++ {
+				initFuncReturnValues[i] = fmt.Sprintf("ret_%s%d", cg.InitFunc, i)
+			}
+
+			buildStmts = append(buildStmts, g.NewRawStatementf(
+				"%s := r.%s()",
+				strings.Join(initFuncReturnValues, ", "),
+				cg.InitFunc,
+			))
+			buildStmts = append(buildStmts, g.NewReturnStatement("r").AddReturnItems(initFuncReturnValues...))
+		} else {
+			buildStmts = append(buildStmts, g.NewRawStatementf("r.%s()", cg.InitFunc))
+			buildStmts = append(buildStmts, g.NewReturnStatement("r"))
+		}
 	} else {
 		buildStmts = append(
 			buildStmts,
@@ -67,8 +85,12 @@ func (cg *BuilderGenerator) Generate(indentLevel int) g.Statement {
 
 	buildFunc := g.NewFunc(
 		g.NewFuncReceiver("b", "*"+builderType),
-		g.NewFuncSignature("Build").
-			AddReturnTypes("*"+cg.TypeName),
+		g.NewFuncSignature("Build").AddReturnTypes("*"+cg.TypeName).AddReturnTypes(func() []string {
+			if len(cg.InitFuncReturnTypes) <= 0 {
+				return []string{}
+			}
+			return cg.InitFuncReturnTypes
+		}()...),
 		buildStmts...,
 	)
 
