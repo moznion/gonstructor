@@ -38,7 +38,7 @@ func main() {
 	shouldShowVersion := flag.Bool("version", false, "[optional] show the version information")
 	withGetter := flag.Bool("withGetter", false, "[optional] generate a constructor along with getter functions for each field")
 	initFunc := flag.String("init", "", "[optional] name of function to call on object after creating it")
-	propagateInitFuncReturns := flag.Bool("propagateInitFuncReturns", false, `[optional] If this option is specified, the generated constructor propagates the return values that come from the init function specified by the "-init" option, e.g. when the init function returns an "error" value, the generated constructor returns (*YourStructType, error).`)
+	propagateInitFuncReturns := flag.Bool("propagateInitFuncReturns", false, `[optional] If this option is specified, the generated constructor propagates the return values that come from the init function specified by the "-init" option, e.g. when the init function returns an "error" value, the generated constructor returns (*YourStructType, error). Known issue: If this option is used with the multiple --type options, probably it won't be the expected result.`)
 
 	flag.Parse()
 

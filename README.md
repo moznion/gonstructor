@@ -33,9 +33,11 @@ Usage of gonstructor:
   -init string
         [optional] name of function to call on object after creating it
   -output string
-        [optional] output file name (default "srcdir/<type>_gen.go")
-  -type string
-        [mandatory] a type name
+        [optional] Output file name (default "srcdir/<type>_gen.go"). See also "-type" option's description.'
+  -propagateInitFuncReturns
+        [optional] If this option is specified, the generated constructor propagates the return values that come from the init function specified by the "-init" option, e.g. when the init function returns an "error" value, the generated constructor returns (*YourStructType, error). Known issue: If this option is used with the multiple --type options, probably it won't be the expected result.
+  -type value
+        [mandatory] A type name. It accepts this option occurs multiple times to output the generated code of the multi types into a single file. If this option is given multiple times, the "-output" option becomes mandatory.
   -version
         [optional] show the version information
   -withGetter
@@ -206,6 +208,50 @@ type Structure struct {
 ```
 
 The generated code according to the above structure doesn't contain `bar` field.
+
+## How to output the generated code of each type into a single file
+
+This CLI tool can have the `--type` option multiple times, and it must have also `--output` option.
+
+example:
+
+```
+//go:generate gonstructor --type=AlphaStructure --type=BravoStructure --constructorTypes=allArgs,builder --withGetter --output=./alpha_and_bravo_gen.go"
+```
+
+## How to propagate the returned values come from `-init` func
+
+`-propagateInitFuncReturns` option supports that.
+
+For example,
+
+```go
+//go:generate gonstructor --type=Struct --constructorTypes=allArgs,builder --init validate --propagateInitFuncReturns
+type Struct struct {
+	foo string
+}
+
+func (s *Struct) validate() error {
+	// do something with the created `Struct` value.
+	return err
+}
+```
+
+then it generates the following Go code:
+
+```go
+func NewStruct(foo string) (*Struct, error) {
+	r := &Struct{
+		foo: foo,
+	}
+
+	ret_validate0 := r.validate()
+
+	return r, ret_validate0
+}
+```
+
+As you can see, the generated constructor `NewStruct()` returns the constructed value and an error that comes from `validate()` function.
 
 ## How to build binaries
 
