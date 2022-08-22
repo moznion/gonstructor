@@ -5,7 +5,7 @@ A command-line tool to generate a constructor for the struct.
 ## Installation
 
 ```
-$ go get -u github.com/moznion/gonstructor/cmd/gonstructor
+$ go install github.com/moznion/gonstructor/cmd/gonstructor@latest
 ```
 
 Also, you can get the pre-built binaries on [Releases](https://github.com/moznion/gonstructor/releases).
@@ -21,7 +21,7 @@ curl -sf https://gobinaries.com/moznion/gonstructor | sh
 gonstructor depends on [goimports](https://pkg.go.dev/golang.org/x/tools/cmd/goimports) for fixing import paths and formatting code, you need to install it:
 
 ```
-$ go get golang.org/x/tools/cmd/goimports
+$ go install golang.org/x/tools/cmd/goimports@latest
 ```
 
 ## Usage
