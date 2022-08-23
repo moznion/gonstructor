@@ -5,6 +5,7 @@ REVISION=$(shell git rev-parse --verify HEAD)
 INTERNAL_PACKAGE=github.com/moznion/gonstructor/internal
 
 check: test lint vet fmt-check
+check-ci: test vet fmt-check
 
 build4test: clean
 	mkdir -p $(RELEASE_DIR)
@@ -19,7 +20,8 @@ test: gen4test
 	go test -v $(PKGS)
 
 lint:
-	golint -set_exit_status $(PKGS_WITHOUT_TEST)
+lint:
+	golangci-lint run ./...
 
 vet:
 	go vet $(PKGS)
