@@ -10,7 +10,7 @@ import (
 func TestStructureAllArgsConstructor(t *testing.T) {
 	givenString := "givenstr"
 	givenIOReader := strings.NewReader(givenString)
-	givenChan := make(chan interface{}, 0)
+	givenChan := make(chan interface{})
 
 	got := NewStructure(givenString, givenIOReader, givenChan)
 	assert.IsType(t, &Structure{}, got)
@@ -30,7 +30,7 @@ func TestStructureAllArgsConstructor(t *testing.T) {
 func TestStructureBuilder(t *testing.T) {
 	givenString := "givenstr"
 	givenIOReader := strings.NewReader(givenString)
-	givenChan := make(chan interface{}, 0)
+	givenChan := make(chan interface{})
 
 	b := NewStructureBuilder()
 	got := b.Foo(givenString).
@@ -46,7 +46,7 @@ func TestStructureBuilder(t *testing.T) {
 }
 
 func TestChildStructureAllArgsConstructor(t *testing.T) {
-	structure := NewStructure("givenstr", strings.NewReader("givenstr"), make(chan interface{}, 0))
+	structure := NewStructure("givenstr", strings.NewReader("givenstr"), make(chan interface{}))
 	givenString := "foobar"
 
 	got := NewChildStructure(structure, givenString)

@@ -18,7 +18,10 @@ jobs:
     - name: Install go toolchains
       run: |
         go install golang.org/x/tools/cmd/goimports@latest
-        go install golang.org/x/lint/golint@latest
     - name: Do test
-      run: make check
+      run: make check-ci
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v3
+      with:
+        version: latest
 

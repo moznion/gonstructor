@@ -31,7 +31,6 @@ func (s *StructureWithInitFoo) initialize() {
 }
 
 func (s StructureWithInitBar) initializeWithActualValueReceiver() {
-	s.checked = true
 }
 
 func (s *StructureWithInitBuz) initializeWithError() error {
