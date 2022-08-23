@@ -79,6 +79,8 @@ func main() {
 		log.Fatal(fmt.Errorf("[error] failed to parse a file: %w", err))
 	}
 
+	alreadyOpenedWithTruncFilesSet := map[string]bool{}
+
 	fileHeaderGenerated := false
 	for _, typeName := range typeNames {
 		fields, err := constructor.CollectConstructorFieldsFromAST(typeName, astFiles)
@@ -145,12 +147,22 @@ func main() {
 		}
 
 		err = func() error {
-			f, err := os.OpenFile(getFilenameToGenerate(typeName, *output, args), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+			fileName := getFilenameToGenerate(typeName, *output, args)
+
+			fileOpenFlag := os.O_APPEND | os.O_WRONLY | os.O_CREATE
+			if !alreadyOpenedWithTruncFilesSet[fileName] {
+				// truncate and make a blank file
+				fileOpenFlag = os.O_TRUNC | os.O_WRONLY | os.O_CREATE
+			}
+
+			f, err := os.OpenFile(fileName, fileOpenFlag, 0644)
 			if err != nil {
 				return fmt.Errorf("[error] failed open a file to output the generated code: %w", err)
 			}
 
 			defer f.Close()
+
+			alreadyOpenedWithTruncFilesSet[fileName] = true
 
 			_, err = f.WriteString(code)
 			if err != nil {
