@@ -12,7 +12,6 @@ build4test: clean
 		-o $(RELEASE_DIR)/gonstructor_test cmd/gonstructor/gonstructor.go
 
 gen4test: build4test
-	rm -f internal/test/*_gen.go internal/test/**/*_gen.go
 	go generate $(PKGS)
 
 test: gen4test
