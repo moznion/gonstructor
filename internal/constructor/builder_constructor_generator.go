@@ -47,7 +47,7 @@ func (cg *BuilderGenerator) Generate(indentLevel int) g.Statement {
 			g.NewFuncSignature(strcase.ToCamel(field.FieldName)).
 				AddParameters(g.NewFuncParameter(toLowerCamel(field.FieldName), field.FieldType)).
 				AddReturnTypes("*"+builderType),
-			g.NewRawStatement(fmt.Sprintf("b.%s = %s", toLowerCamel(field.FieldName), strcase.ToLowerCamel(field.FieldName))),
+			g.NewRawStatement(fmt.Sprintf("b.%s = %s", toLowerCamel(field.FieldName), toLowerCamel(field.FieldName))),
 			g.NewReturnStatement("b"),
 		))
 
