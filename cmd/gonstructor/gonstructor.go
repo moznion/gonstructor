@@ -84,7 +84,7 @@ func main() {
 		fileHeaderGenerated            = false
 		rootStmt                       = g.NewRoot()
 	)
-	for _, typeName := range typeNames {
+	for i, typeName := range typeNames {
 		fields, err := constructor.CollectConstructorFieldsFromAST(typeName, astFiles)
 		if err != nil {
 			log.Fatal(fmt.Errorf("[error] failed to collect fields from files: %w", err))
@@ -139,6 +139,9 @@ func main() {
 
 		if *withGetter {
 			rootStmt = rootStmt.AddStatements(internal.GenerateGetters(typeName, fields))
+		}
+		if i != len(typeNames)-1 {
+			rootStmt = rootStmt.AddStatements(g.NewNewline())
 		}
 	}
 
