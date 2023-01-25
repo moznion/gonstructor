@@ -79,11 +79,9 @@ func main() {
 		log.Fatal(fmt.Errorf("[error] failed to parse a file: %w", err))
 	}
 
-	var (
-		alreadyOpenedWithTruncFilesSet = map[string]bool{}
-		fileHeaderGenerated            = false
-		rootStmt                       = g.NewRoot()
-	)
+	alreadyOpenedWithTruncFilesSet := map[string]bool{}
+	fileHeaderGenerated := false
+	rootStmt := g.NewRoot()
 	for i, typeName := range typeNames {
 		fields, err := constructor.CollectConstructorFieldsFromAST(typeName, astFiles)
 		if err != nil {
@@ -140,7 +138,8 @@ func main() {
 		if *withGetter {
 			rootStmt = rootStmt.AddStatements(internal.GenerateGetters(typeName, fields))
 		}
-		if i != len(typeNames)-1 {
+
+		if i != len(typeNames)-1 { // insert a newline *between* the generated type-code (i.e. don't append a trailing newline)
 			rootStmt = rootStmt.AddStatements(g.NewNewline())
 		}
 	}
