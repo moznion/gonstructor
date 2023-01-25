@@ -56,3 +56,13 @@ func TestStructureBuilder(t *testing.T) {
 	assert.EqualValues(t, givenBuzString, gotBravo.buz)
 	assert.EqualValues(t, givenQuxInt, gotBravo.qux)
 }
+
+func TestStructureWhichNeedsImport1Instantiation(t *testing.T) {
+	s := NewStructureWhichNeedsImport1(nil)
+	assert.IsType(t, &StructureWhichNeedsImport1{}, s)
+}
+
+func TestStructureWhichNeedsImport2Instantiation(t *testing.T) {
+	s := NewStructureWhichNeedsImport2(nil)
+	assert.IsType(t, &StructureWhichNeedsImport2{}, s)
+}
