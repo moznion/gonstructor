@@ -79,10 +79,12 @@ func main() {
 		log.Fatal(fmt.Errorf("[error] failed to parse a file: %w", err))
 	}
 
-	alreadyOpenedWithTruncFilesSet := map[string]bool{}
-
-	fileHeaderGenerated := false
-	for _, typeName := range typeNames {
+	var (
+		alreadyOpenedWithTruncFilesSet = map[string]bool{}
+		fileHeaderGenerated            = false
+		rootStmt                       = g.NewRoot()
+	)
+	for i, typeName := range typeNames {
 		fields, err := constructor.CollectConstructorFieldsFromAST(typeName, astFiles)
 		if err != nil {
 			log.Fatal(fmt.Errorf("[error] failed to collect fields from files: %w", err))
@@ -95,8 +97,6 @@ func main() {
 				log.Fatal(fmt.Errorf("[error] failed to collect the return types of the init func: %w", err))
 			}
 		}
-
-		rootStmt := g.NewRoot()
 
 		if !fileHeaderGenerated {
 			rootStmt = rootStmt.AddStatements(
@@ -140,40 +140,43 @@ func main() {
 		if *withGetter {
 			rootStmt = rootStmt.AddStatements(internal.GenerateGetters(typeName, fields))
 		}
+		if i != len(typeNames)-1 {
+			rootStmt = rootStmt.AddStatements(g.NewNewline())
+		}
+	}
 
-		code, err := rootStmt.Goimports().EnableSyntaxChecking().Generate(0)
-		if err != nil {
-			log.Fatal(fmt.Errorf("[error] failed to generate code: %w", err))
+	code, err := rootStmt.Goimports().EnableSyntaxChecking().Generate(0)
+	if err != nil {
+		log.Fatal(fmt.Errorf("[error] failed to generate code: %w", err))
+	}
+
+	err = func() error {
+		fileName := getFilenameToGenerate(typeNames[0], *output, args)
+
+		fileOpenFlag := os.O_APPEND | os.O_WRONLY | os.O_CREATE
+		if !alreadyOpenedWithTruncFilesSet[fileName] {
+			// truncate and make a blank file
+			fileOpenFlag = os.O_TRUNC | os.O_WRONLY | os.O_CREATE
 		}
 
-		err = func() error {
-			fileName := getFilenameToGenerate(typeName, *output, args)
-
-			fileOpenFlag := os.O_APPEND | os.O_WRONLY | os.O_CREATE
-			if !alreadyOpenedWithTruncFilesSet[fileName] {
-				// truncate and make a blank file
-				fileOpenFlag = os.O_TRUNC | os.O_WRONLY | os.O_CREATE
-			}
-
-			f, err := os.OpenFile(fileName, fileOpenFlag, 0644)
-			if err != nil {
-				return fmt.Errorf("[error] failed open a file to output the generated code: %w", err)
-			}
-
-			defer f.Close()
-
-			alreadyOpenedWithTruncFilesSet[fileName] = true
-
-			_, err = f.WriteString(code)
-			if err != nil {
-				return fmt.Errorf("[error] failed output generated code to a file: %w", err)
-			}
-
-			return nil
-		}()
+		f, err := os.OpenFile(fileName, fileOpenFlag, 0644)
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("[error] failed open a file to output the generated code: %w", err)
 		}
+
+		defer f.Close()
+
+		alreadyOpenedWithTruncFilesSet[fileName] = true
+
+		_, err = f.WriteString(code)
+		if err != nil {
+			return fmt.Errorf("[error] failed output generated code to a file: %w", err)
+		}
+
+		return nil
+	}()
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
