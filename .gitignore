@@ -12,6 +12,7 @@
 /Godeps/
 
 /internal/test/*_gen.go
+/internal/test/**/*_gen.go
 /dist/
 
 /gonstructor
