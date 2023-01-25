@@ -15,8 +15,11 @@ build4test: clean
 gen4test: build4test
 	go generate $(PKGS)
 
-test: gen4test
+test: clean-test-gen gen4test
 	go test -v $(PKGS)
+
+clean-test-gen:
+	rm -f internal/test/*_gen.go internal/test/**/*_gen.go
 
 lint:
 lint:
