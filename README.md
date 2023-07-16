@@ -65,7 +65,7 @@ Therefore this project aims to automatically generate constructors to use struct
 e.g.
 
 ```go
-//go:generate gonstructor --type=Structure --constructorTypes=allArgs"
+//go:generate gonstructor --type=Structure --constructorTypes=allArgs
 type Structure struct {
 	foo string
 	bar io.Reader
@@ -91,7 +91,7 @@ func NewStructure(foo string, bar io.Reader, buz chan interface{}) *Structure {
 e.g.
 
 ```go
-//go:generate gonstructor --type=Structure --constructorTypes=builder"
+//go:generate gonstructor --type=Structure --constructorTypes=builder
 type Structure struct {
 	foo string
 	bar io.Reader
