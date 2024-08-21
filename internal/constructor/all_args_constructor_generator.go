@@ -16,6 +16,7 @@ type AllArgsConstructorGenerator struct {
 	InitFunc                 string
 	InitFuncReturnTypes      []string
 	PropagateInitFuncReturns bool
+	ReturnValue              bool
 }
 
 // Generate generates a constructor statement with all of arguments.
@@ -36,14 +37,16 @@ func (cg *AllArgsConstructorGenerator) Generate(indentLevel int) g.Statement {
 		)
 	}
 
-	funcSignature = funcSignature.AddReturnTypes("*" + cg.TypeName).AddReturnTypes(func() []string {
-		if len(cg.InitFuncReturnTypes) <= 0 {
-			return []string{}
-		}
-		return cg.InitFuncReturnTypes
-	}()...)
+	funcSignature = funcSignature.
+		AddReturnTypes(withPrefix(cg.TypeName, "*", !cg.ReturnValue)).
+		AddReturnTypes(func() []string {
+			if len(cg.InitFuncReturnTypes) <= 0 {
+				return []string{}
+			}
+			return cg.InitFuncReturnTypes
+		}()...)
 
-	retStructure := generateStructure(cg.TypeName, retStructureKeyValues, indentLevel+1)
+	retStructure := generateStructure(cg.TypeName, retStructureKeyValues, indentLevel+1, cg.ReturnValue)
 
 	var stmts []g.Statement
 

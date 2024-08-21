@@ -130,3 +130,13 @@ func TestStructureWithPointerEmbeddingBuilder(t *testing.T) {
 	assert.EqualValues(t, "bar", got.Bar)
 	assert.EqualValues(t, "bar", got.Embedded.Bar)
 }
+
+func TestStructureWithReturnValueBuilder(t *testing.T) {
+	got := NewStructureValueBuilder().Foo("foo").Build()
+	assert.IsType(t, StructureValue{}, got)
+}
+
+func TestStructureWithReturnValueAllArgs(t *testing.T) {
+	got := NewStructureValue("foo")
+	assert.IsType(t, StructureValue{}, got)
+}
