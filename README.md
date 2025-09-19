@@ -253,6 +253,27 @@ func NewStruct(foo string) (*Struct, error) {
 
 As you can see, the generated constructor `NewStruct()` returns the constructed value and an error that comes from `validate()` function.
 
+## How to return a value instead of a pointer
+
+`-returnValue` option supports that.
+
+For example,
+
+```go
+//go:generate gonstructor --type=Struct --constructorTypes=allArgs --returnValue
+type Struct struct {
+	foo string
+}
+```
+
+then it generates the following Go code:
+
+```go
+func NewStruct(foo string) Struct {
+	return Struct{foo: foo}
+}
+```
+
 ## How to build binaries
 
 Binaries are built and uploaded by [goreleaser](https://goreleaser.com/). Please refer to the configuration file: [.goreleaser.yml](./.goreleaser.yml)

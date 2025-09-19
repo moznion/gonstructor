@@ -42,3 +42,8 @@ type StructureWithPointerEmbedding struct {
 	*Embedded
 	foo string
 }
+
+//go:generate sh -c "$(cd ./\"$(git rev-parse --show-cdup)\" || exit; pwd)/dist/gonstructor_test --type=StructureValue --constructorTypes=allArgs,builder --withGetter --returnValue"
+type StructureValue struct {
+	foo string
+}

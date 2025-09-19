@@ -15,6 +15,7 @@ type BuilderGenerator struct {
 	InitFunc                 string
 	InitFuncReturnTypes      []string
 	PropagateInitFuncReturns bool
+	ReturnValue              bool
 }
 
 // Generate generates a builder statement.
@@ -54,7 +55,7 @@ func (cg *BuilderGenerator) Generate(indentLevel int) g.Statement {
 		retStructureKeyValues = append(retStructureKeyValues, fmt.Sprintf("%s: b.%s", field.FieldName, toLowerCamel(field.FieldName)))
 	}
 
-	buildResult := generateStructure(cg.TypeName, retStructureKeyValues, indentLevel+1)
+	buildResult := generateStructure(cg.TypeName, retStructureKeyValues, indentLevel+1, cg.ReturnValue)
 
 	var buildStmts []g.Statement
 	if cg.InitFunc != "" {
@@ -85,7 +86,7 @@ func (cg *BuilderGenerator) Generate(indentLevel int) g.Statement {
 
 	buildFunc := g.NewFunc(
 		g.NewFuncReceiver("b", "*"+builderType),
-		g.NewFuncSignature("Build").AddReturnTypes("*"+cg.TypeName).AddReturnTypes(func() []string {
+		g.NewFuncSignature("Build").AddReturnTypes(withPrefix(cg.TypeName, "*", !cg.ReturnValue)).AddReturnTypes(func() []string {
 			if len(cg.InitFuncReturnTypes) <= 0 {
 				return []string{}
 			}
