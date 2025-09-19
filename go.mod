@@ -1,6 +1,6 @@
 module github.com/moznion/gonstructor
 
-go 1.22
+go 1.24.0
 
 toolchain go1.25.1
 
