@@ -21,7 +21,7 @@ jobs:
     - name: Do test
       run: make check-ci
     - name: golangci-lint
-      uses: golangci/golangci-lint-action@v6
+      uses: golangci/golangci-lint-action@v8
       with:
         version: latest
 
