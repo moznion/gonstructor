@@ -16,6 +16,7 @@ type BuilderGenerator struct {
 	InitFuncReturnTypes      []string
 	PropagateInitFuncReturns bool
 	ReturnValue              bool
+	SetterPrefix             string
 }
 
 // Generate generates a builder statement.
@@ -45,7 +46,7 @@ func (cg *BuilderGenerator) Generate(indentLevel int) g.Statement {
 
 		fieldRegistererFunctions = append(fieldRegistererFunctions, g.NewFunc(
 			g.NewFuncReceiver("b", "*"+builderType),
-			g.NewFuncSignature(strcase.ToCamel(field.FieldName)).
+			g.NewFuncSignature(withConditionalPrefix(strcase.ToCamel(field.FieldName), cg.SetterPrefix, cg.SetterPrefix != "")).
 				AddParameters(g.NewFuncParameter(toLowerCamel(field.FieldName), field.FieldType)).
 				AddReturnTypes("*"+builderType),
 			g.NewRawStatement(fmt.Sprintf("b.%s = %s", toLowerCamel(field.FieldName), toLowerCamel(field.FieldName))),

@@ -40,6 +40,7 @@ func main() {
 	initFunc := flag.String("init", "", "[optional] name of function to call on object after creating it")
 	propagateInitFuncReturns := flag.Bool("propagateInitFuncReturns", false, `[optional] If this option is specified, the generated constructor propagates the return values that come from the init function specified by the "-init" option, e.g. when the init function returns an "error" value, the generated constructor returns (*YourStructType, error). Known issue: If this option is used with the multiple --type options, probably it won't be the expected result.`)
 	returnValue := flag.Bool("returnValue", false, "[optional] return value instead of pointer")
+	setterPrefix := flag.String("setterPrefix", "", "[optional] prefix for setter methods in builder pattern (e.g., 'With' generates WithFoo instead of Foo)")
 
 	flag.Parse()
 
@@ -128,6 +129,7 @@ func main() {
 					InitFuncReturnTypes:      initFuncReturnTypes,
 					PropagateInitFuncReturns: *propagateInitFuncReturns,
 					ReturnValue:              *returnValue,
+					SetterPrefix:             *setterPrefix,
 				}
 
 			default:
