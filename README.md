@@ -36,6 +36,10 @@ Usage of gonstructor:
         [optional] Output file name (default "srcdir/<type>_gen.go"). See also "-type" option's description.'
   -propagateInitFuncReturns
         [optional] If this option is specified, the generated constructor propagates the return values that come from the init function specified by the "-init" option, e.g. when the init function returns an "error" value, the generated constructor returns (*YourStructType, error). Known issue: If this option is used with the multiple --type options, probably it won't be the expected result.
+  -returnValue
+        [optional] return "value" instead of pointer
+  -setterPrefix string
+        [optional] prefix for setter methods in builder pattern (e.g., 'With' generates WithFoo instead of Foo)
   -type value
         [mandatory] A type name. It accepts this option occurs multiple times to output the generated code of the multi types into a single file. If this option is given multiple times, the "-output" option becomes mandatory.
   -version
