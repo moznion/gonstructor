@@ -47,3 +47,9 @@ type StructureWithPointerEmbedding struct {
 type StructureValue struct {
 	foo string
 }
+
+//go:generate sh -c "$(cd ./\"$(git rev-parse --show-cdup)\" || exit; pwd)/dist/gonstructor_test --type=StructureWithSetterPrefix --constructorTypes=builder --setterPrefix=With"
+type StructureWithSetterPrefix struct {
+	foo string
+	bar int
+}

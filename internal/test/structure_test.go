@@ -140,3 +140,14 @@ func TestStructureWithReturnValueAllArgs(t *testing.T) {
 	got := NewStructureValue("foo")
 	assert.IsType(t, StructureValue{}, got)
 }
+
+func TestStructureWithSetterPrefix(t *testing.T) {
+	b := NewStructureWithSetterPrefixBuilder()
+	got := b.WithFoo("foo").
+		WithBar(123).
+		Build()
+	assert.IsType(t, &StructureWithSetterPrefix{}, got)
+
+	assert.EqualValues(t, "foo", got.foo)
+	assert.EqualValues(t, 123, got.bar)
+}
