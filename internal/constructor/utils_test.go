@@ -6,14 +6,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWithPrefix(t *testing.T) {
+func TestWithConditionalPrefix(t *testing.T) {
 	t.Run("apply prefix", func(t *testing.T) {
-		got := withPrefix("Struct", "*", true)
+		got := withConditionalPrefix("Struct", "*", true)
 		assert.Equal(t, "*Struct", got)
 	})
 
 	t.Run("ignore prefix", func(t *testing.T) {
-		got := withPrefix("Struct", "*", false)
+		got := withConditionalPrefix("Struct", "*", false)
 		assert.Equal(t, "Struct", got)
 	})
 }

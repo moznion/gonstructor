@@ -86,7 +86,7 @@ func (cg *BuilderGenerator) Generate(indentLevel int) g.Statement {
 
 	buildFunc := g.NewFunc(
 		g.NewFuncReceiver("b", "*"+builderType),
-		g.NewFuncSignature("Build").AddReturnTypes(withPrefix(cg.TypeName, "*", !cg.ReturnValue)).AddReturnTypes(func() []string {
+		g.NewFuncSignature("Build").AddReturnTypes(withConditionalPrefix(cg.TypeName, "*", !cg.ReturnValue)).AddReturnTypes(func() []string {
 			if len(cg.InitFuncReturnTypes) <= 0 {
 				return []string{}
 			}
