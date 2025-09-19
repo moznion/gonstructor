@@ -91,7 +91,7 @@ func TestStructureWithEmbeddingAllArgsConstructor(t *testing.T) {
 
 	assert.EqualValues(t, "foo", got.foo)
 	assert.EqualValues(t, "bar", got.Bar)
-	assert.EqualValues(t, "bar", got.Embedded.Bar)
+	assert.EqualValues(t, "bar", got.Embedded.Bar) // nolint:staticcheck // for inspection
 
 	// test for getters
 	assert.EqualValues(t, "foo", got.GetFoo())
@@ -105,7 +105,7 @@ func TestStructureWithEmbeddingBuilder(t *testing.T) {
 
 	assert.EqualValues(t, "foo", got.foo)
 	assert.EqualValues(t, "bar", got.Bar)
-	assert.EqualValues(t, "bar", got.Embedded.Bar)
+	assert.EqualValues(t, "bar", got.Embedded.Bar) // nolint:staticcheck // for inspection
 }
 
 func TestStructureWithPointerEmbeddingAllArgsConstructor(t *testing.T) {
@@ -114,7 +114,7 @@ func TestStructureWithPointerEmbeddingAllArgsConstructor(t *testing.T) {
 
 	assert.EqualValues(t, "foo", got.foo)
 	assert.EqualValues(t, "bar", got.Bar)
-	assert.EqualValues(t, "bar", got.Embedded.Bar)
+	assert.EqualValues(t, "bar", got.Embedded.Bar) // nolint:staticcheck // for inspection
 
 	// test for getters
 	assert.EqualValues(t, "foo", got.GetFoo())
@@ -128,5 +128,5 @@ func TestStructureWithPointerEmbeddingBuilder(t *testing.T) {
 
 	assert.EqualValues(t, "foo", got.foo)
 	assert.EqualValues(t, "bar", got.Bar)
-	assert.EqualValues(t, "bar", got.Embedded.Bar)
+	assert.EqualValues(t, "bar", got.Embedded.Bar) // nolint:staticcheck // for inspection
 }

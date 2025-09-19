@@ -163,7 +163,9 @@ func main() {
 			return fmt.Errorf("[error] failed open a file to output the generated code: %w", err)
 		}
 
-		defer f.Close()
+		defer func() {
+			_ = f.Close()
+		}()
 
 		alreadyOpenedWithTruncFilesSet[fileName] = true
 
