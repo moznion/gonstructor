@@ -18,5 +18,5 @@ func generateStructure(typeName string, keyValues []string, indentLevel int, ret
 		strings.Join(keyValues, ",\n"+nextIndent),
 		indent,
 	)
-	return withPrefix(structure, "&", !returnValue)
+	return withConditionalPrefix(structure, "&", !returnValue)
 }

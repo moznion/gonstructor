@@ -38,7 +38,7 @@ func (cg *AllArgsConstructorGenerator) Generate(indentLevel int) g.Statement {
 	}
 
 	funcSignature = funcSignature.
-		AddReturnTypes(withPrefix(cg.TypeName, "*", !cg.ReturnValue)).
+		AddReturnTypes(withConditionalPrefix(cg.TypeName, "*", !cg.ReturnValue)).
 		AddReturnTypes(func() []string {
 			if len(cg.InitFuncReturnTypes) <= 0 {
 				return []string{}
