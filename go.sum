@@ -9,6 +9,8 @@ github.com/iancoleman/strcase v0.3.0 h1:nTXanmYxhfFAMjZL34Ov6gkzEsSJZ5DbhxWjvSAS
 github.com/iancoleman/strcase v0.3.0/go.mod h1:iwCmte+B7n89clKwxIoIXy/HfoL7AsD47ZCWhYzw7ho=
 github.com/moznion/gowrtr v1.6.0 h1:LKF1Alq3PbN8ePANPzQu9/kLEupaLfqviq28ETt1Za4=
 github.com/moznion/gowrtr v1.6.0/go.mod h1:3Aa/LF0Z8sG4VpNxtzd+2pzIDvMX3N2O17LVkybHDNA=
+github.com/moznion/gowrtr v1.7.0 h1:bIOdlAeEHDJEs9o2TIS7Oq3HsPIvxGauPHf3a8IVjXE=
+github.com/moznion/gowrtr v1.7.0/go.mod h1:sjAFodAvRj5fljRjf9yht52GMBVzELkyxcE31B1vJgg=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
 github.com/pkg/errors v0.9.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
