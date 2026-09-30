@@ -53,3 +53,9 @@ type StructureWithSetterPrefix struct {
 	foo string
 	bar int
 }
+
+//go:generate sh -c "$(cd ./\"$(git rev-parse --show-cdup)\" || exit; pwd)/dist/gonstructor_test --type=StructureWithGetterPrefix --withGetter --getterPrefix CustomGetPrefix"
+type StructureWithGetterPrefix struct {
+	foo string
+	bar int
+}
