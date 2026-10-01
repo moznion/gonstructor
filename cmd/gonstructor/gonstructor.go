@@ -38,6 +38,7 @@ func main() {
 	shouldShowVersion := flag.Bool("version", false, "[optional] show the version information")
 	withGetter := flag.Bool("withGetter", false, "[optional] generate a constructor along with getter functions for each field")
 	initFunc := flag.String("init", "", "[optional] name of function to call on object after creating it")
+	getterPrefix := flag.String("getterPrefix", "Get", `[optional] Prefix for getter methods. Works only when the "-withGetter" option is specified`)
 	propagateInitFuncReturns := flag.Bool("propagateInitFuncReturns", false, `[optional] If this option is specified, the generated constructor propagates the return values that come from the init function specified by the "-init" option, e.g. when the init function returns an "error" value, the generated constructor returns (*YourStructType, error). Known issue: If this option is used with the multiple --type options, probably it won't be the expected result.`)
 	returnValue := flag.Bool("returnValue", false, "[optional] return \"value\" instead of pointer")
 	setterPrefix := flag.String("setterPrefix", "", "[optional] prefix for setter methods in builder pattern (e.g., 'With' generates WithFoo instead of Foo)")
@@ -141,7 +142,7 @@ func main() {
 		}
 
 		if *withGetter {
-			rootStmt = rootStmt.AddStatements(internal.GenerateGetters(typeName, fields))
+			rootStmt = rootStmt.AddStatements(internal.GenerateGetters(typeName, *getterPrefix, fields))
 		}
 
 		if i != len(typeNames)-1 { // insert a newline *between* the generated type-code (i.e. don't append a trailing newline)

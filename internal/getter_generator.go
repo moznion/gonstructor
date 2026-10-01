@@ -11,13 +11,13 @@ import (
 const receiverName = "s"
 
 // GenerateGetters generates getters for each field.
-func GenerateGetters(typeName string, fields []*constructor.Field) g.Statement {
+func GenerateGetters(typeName string, prefix string, fields []*constructor.Field) g.Statement {
 	stmt := g.NewRoot()
 	for _, field := range fields {
 		stmt = stmt.AddStatements(
 			g.NewFunc(
 				g.NewFuncReceiver(receiverName, "*"+typeName),
-				g.NewFuncSignature(fmt.Sprintf("Get%s", strcase.ToCamel(field.FieldName))).
+				g.NewFuncSignature(fmt.Sprintf("%s%s", prefix, strcase.ToCamel(field.FieldName))).
 					AddReturnTypes(field.FieldType),
 				g.NewReturnStatement(fmt.Sprintf("%s.%s", receiverName, field.FieldName)),
 			),

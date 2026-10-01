@@ -151,3 +151,11 @@ func TestStructureWithSetterPrefix(t *testing.T) {
 	assert.EqualValues(t, "foo", got.foo)
 	assert.EqualValues(t, 123, got.bar)
 }
+
+func TestStructureWithGetterPrefix(t *testing.T) {
+	got := NewStructureWithGetterPrefix("foo", 123)
+	assert.IsType(t, &StructureWithGetterPrefix{}, got)
+
+	assert.EqualValues(t, "foo", got.CustomGetPrefixFoo())
+	assert.EqualValues(t, 123, got.CustomGetPrefixBar())
+}
