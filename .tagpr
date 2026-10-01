@@ -1,0 +1,27 @@
+# config file for the tagpr in git config format
+# The tagpr generates the initial configuration, which you can rewrite to suit your environment.
+# CONFIGURATIONS:
+#   tagpr.releaseBranch
+#       Generally, it is "main." It is the branch for releases. The tagpr tracks this branch,
+#       creates or updates a pull request as a release candidate, or tags when they are merged.
+#
+#   tagpr.versionFile
+#       Versioning file containing the semantic version needed to be updated at release.
+#       "-" means the version is managed by Git tags only.
+#
+#   tagpr.vPrefix
+#       Flag whether or not v-prefix is added to semver when git tagging. (e.g. v1.2.3 if true)
+#
+#   tagpr.changelog
+#       Flag whether or not CHANGELOG.md is updated.
+#
+#   tagpr.release
+#       GitHub Release creation behavior after tagging [true, draft, false].
+#       It is disabled here because GoReleaser creates the GitHub Release.
+#
+[tagpr]
+	vPrefix = true
+	releaseBranch = master
+	versionFile = -
+	changelog = true
+	release = false

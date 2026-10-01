@@ -1,0 +1,45 @@
+name: tagpr
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+
+jobs:
+  tagpr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - id: tagpr
+        name: Run tagpr
+        uses: Songmu/tagpr@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout the tag
+        if: steps.tagpr.outputs.tag != ''
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.tagpr.outputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Go
+        if: steps.tagpr.outputs.tag != ''
+        uses: actions/setup-go@v7
+        with:
+          go-version: '1.27.x'
+      - name: Run GoReleaser
+        if: steps.tagpr.outputs.tag != ''
+        uses: goreleaser/goreleaser-action@v7
+        with:
+          version: latest
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
