@@ -39,7 +39,7 @@ jobs:
           go-version: '1.27.x'
       - name: Run GoReleaser
         if: steps.tagpr.outputs.tag != ''
-        uses: goreleaser/goreleaser-action@v7.2.3
+        uses: goreleaser/goreleaser-action@v7.3.0
         with:
           version: latest
           args: release --clean
