@@ -2,7 +2,7 @@ module github.com/moznion/gonstructor
 
 go 1.26.0
 
-toolchain go1.27.1
+toolchain go1.27.3
 
 require (
 	github.com/iancoleman/strcase v0.3.0
