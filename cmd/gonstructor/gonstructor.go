@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"go/ast"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 	"github.com/moznion/gonstructor/internal"
 	"github.com/moznion/gonstructor/internal/constructor"
 	g "github.com/moznion/gowrtr/generator"
+	"golang.org/x/tools/go/packages"
 )
 
 const (
@@ -19,89 +21,65 @@ const (
 	builderConstructorType = "builder"
 )
 
-type stringArrayFlag []string
-
-func (a *stringArrayFlag) String() string {
-	return strings.Join(*a, ", ")
-}
-
-func (a *stringArrayFlag) Set(item string) error {
-	*a = append(*a, item)
-	return nil
-}
-
 func main() {
-	var typeNames stringArrayFlag
-	flag.Var(&typeNames, "type", `[mandatory] A type name. It accepts this option occurs multiple times to output the generated code of the multi types into a single file. If this option is given multiple times, the "-output" option becomes mandatory.`)
-	output := flag.String("output", "", `[optional] Output file name (default "srcdir/<type>_gen.go"). See also "-type" option's description.'`)
-	constructorTypesStr := flag.String("constructorTypes", allArgsConstructorType, fmt.Sprintf(`[optional] comma-separated list of constructor types; it expects "%s" and "%s"`, allArgsConstructorType, builderConstructorType))
-	shouldShowVersion := flag.Bool("version", false, "[optional] show the version information")
-	withGetter := flag.Bool("withGetter", false, "[optional] generate a constructor along with getter functions for each field")
-	initFunc := flag.String("init", "", "[optional] name of function to call on object after creating it")
-	getterPrefix := flag.String("getterPrefix", "Get", `[optional] Prefix for getter methods. Works only when the "-withGetter" option is specified`)
-	propagateInitFuncReturns := flag.Bool("propagateInitFuncReturns", false, `[optional] If this option is specified, the generated constructor propagates the return values that come from the init function specified by the "-init" option, e.g. when the init function returns an "error" value, the generated constructor returns (*YourStructType, error). Known issue: If this option is used with the multiple --type options, probably it won't be the expected result.`)
-	returnValue := flag.Bool("returnValue", false, "[optional] return \"value\" instead of pointer")
-	setterPrefix := flag.String("setterPrefix", "", "[optional] prefix for setter methods in builder pattern (e.g., 'With' generates WithFoo instead of Foo)")
-
-	flag.Parse()
-
-	if *shouldShowVersion {
+	options, err := parseOptions(os.Args[1:])
+	if err != nil {
+		if err == flag.ErrHelp {
+			return
+		}
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+	if options.showVersion {
 		internal.ShowVersion()
 		return
 	}
-
-	if len(typeNames) <= 0 {
-		flag.Usage()
-		os.Exit(2)
+	if options.batch != "" {
+		err = runBatch(options.batch)
+	} else {
+		err = generateSingle(options)
 	}
-	if len(typeNames) >= 2 && *output == "" {
-		_, _ = fmt.Fprintln(os.Stderr, `[error] if "-type" option appears two or more times, the "-output" option must be specified.`)
-		flag.Usage()
-		os.Exit(2)
-	}
-
-	constructorTypes, err := getConstructorTypes(*constructorTypesStr)
 	if err != nil {
-		log.Printf("[error] %s", err)
-		flag.Usage()
-		os.Exit(2)
+		log.Fatal(err)
 	}
+}
 
-	args := flag.Args()
-	if len(args) <= 0 {
-		args = []string{"."}
-	}
-
-	pkg, err := internal.ParsePackage(args)
+func generateSingle(options options) error {
+	pkg, err := internal.ParsePackage(options.patterns)
 	if err != nil {
-		log.Fatal(fmt.Errorf("[error] failed to parse a package: %w", err))
+		return fmt.Errorf("failed to parse a package: %w", err)
 	}
-
-	astFiles, err := internal.ParseFiles(pkg.GoFiles)
+	files, err := internal.ParseFiles(pkg.GoFiles)
 	if err != nil {
-		log.Fatal(fmt.Errorf("[error] failed to parse a file: %w", err))
+		return fmt.Errorf("failed to parse files: %w", err)
 	}
+	code, err := render(options, pkg, files)
+	if err != nil {
+		return err
+	}
+	return writeOutput(getFilenameToGenerate(options.typeNames[0], options.output, options.patterns), code)
+}
 
-	alreadyOpenedWithTruncFilesSet := map[string]bool{}
+func render(options options, pkg *packages.Package, astFiles []*ast.File) (string, error) {
 	fileHeaderGenerated := false
 	rootStmt := g.NewRoot()
-	for i, typeName := range typeNames {
+	for i, typeName := range options.typeNames {
 		fields, err := constructor.CollectConstructorFieldsFromAST(typeName, astFiles)
 		if err != nil {
-			log.Fatal(fmt.Errorf("[error] failed to collect fields from files: %w", err))
+			return "", fmt.Errorf("[error] failed to collect fields from files: %w", err)
 		}
 
 		var initFuncReturnTypes []string
-		if *initFunc != "" {
-			initFuncReturnTypes, err = constructor.CollectInitFuncReturnTypes(typeName, *initFunc, astFiles)
+		if options.initFunc != "" {
+			initFuncReturnTypes, err = constructor.CollectInitFuncReturnTypes(typeName, options.initFunc, astFiles)
 			if err != nil {
-				log.Fatal(fmt.Errorf("[error] failed to collect the return types of the init func: %w", err))
+				return "", fmt.Errorf("[error] failed to collect the return types of the init func: %w", err)
 			}
 		}
 
 		if !fileHeaderGenerated {
 			rootStmt = rootStmt.AddStatements(
-				g.NewComment(fmt.Sprintf(" Code generated by gonstructor %s; DO NOT EDIT.", strings.Join(os.Args[1:], " "))),
+				g.NewComment(fmt.Sprintf(" Code generated by gonstructor %s; DO NOT EDIT.", strings.Join(options.rawArgs, " "))),
 				g.NewNewline(),
 				g.NewPackage(pkg.Name),
 				g.NewNewline(),
@@ -109,82 +87,60 @@ func main() {
 		}
 		fileHeaderGenerated = true
 
-		for _, constructorType := range constructorTypes {
+		for _, constructorType := range options.constructorTypes {
 			var constructorGenerator constructor.Generator
 			switch constructorType {
 			case allArgsConstructorType:
 				constructorGenerator = &constructor.AllArgsConstructorGenerator{
 					TypeName:                 typeName,
 					Fields:                   fields,
-					InitFunc:                 *initFunc,
+					InitFunc:                 options.initFunc,
 					InitFuncReturnTypes:      initFuncReturnTypes,
-					PropagateInitFuncReturns: *propagateInitFuncReturns,
-					ReturnValue:              *returnValue,
+					PropagateInitFuncReturns: options.propagateInitFuncReturns,
+					ReturnValue:              options.returnValue,
 				}
 
 			case builderConstructorType:
 				constructorGenerator = &constructor.BuilderGenerator{
 					TypeName:                 typeName,
 					Fields:                   fields,
-					InitFunc:                 *initFunc,
+					InitFunc:                 options.initFunc,
 					InitFuncReturnTypes:      initFuncReturnTypes,
-					PropagateInitFuncReturns: *propagateInitFuncReturns,
-					ReturnValue:              *returnValue,
-					SetterPrefix:             *setterPrefix,
+					PropagateInitFuncReturns: options.propagateInitFuncReturns,
+					ReturnValue:              options.returnValue,
+					SetterPrefix:             options.setterPrefix,
 				}
 
 			default:
 				// unreachable, just in case
-				log.Fatalf("[error] unexpected constructor type has come [given=%s]", constructorType)
+				return "", fmt.Errorf("[error] unexpected constructor type has come [given=%s]", constructorType)
 			}
 
 			rootStmt = rootStmt.AddStatements(constructorGenerator.Generate(0))
 		}
 
-		if *withGetter {
-			rootStmt = rootStmt.AddStatements(internal.GenerateGetters(typeName, *getterPrefix, fields))
+		if options.withGetter {
+			rootStmt = rootStmt.AddStatements(internal.GenerateGetters(typeName, options.getterPrefix, fields))
 		}
 
-		if i != len(typeNames)-1 { // insert a newline *between* the generated type-code (i.e. don't append a trailing newline)
+		if i != len(options.typeNames)-1 { // insert a newline *between* the generated type-code (i.e. don't append a trailing newline)
 			rootStmt = rootStmt.AddStatements(g.NewNewline())
 		}
 	}
 
 	code, err := rootStmt.Goimports().EnableSyntaxChecking().Generate(0)
 	if err != nil {
-		log.Fatal(fmt.Errorf("[error] failed to generate code: %w", err))
+		return "", fmt.Errorf("[error] failed to generate code: %w", err)
 	}
 
-	err = func() error {
-		fileName := getFilenameToGenerate(typeNames[0], *output, args)
+	return code, nil
+}
 
-		fileOpenFlag := os.O_APPEND | os.O_WRONLY | os.O_CREATE
-		if !alreadyOpenedWithTruncFilesSet[fileName] {
-			// truncate and make a blank file
-			fileOpenFlag = os.O_TRUNC | os.O_WRONLY | os.O_CREATE
-		}
-
-		f, err := os.OpenFile(fileName, fileOpenFlag, 0644)
-		if err != nil {
-			return fmt.Errorf("[error] failed open a file to output the generated code: %w", err)
-		}
-
-		defer func() {
-			_ = f.Close()
-		}()
-
-		alreadyOpenedWithTruncFilesSet[fileName] = true
-
-		_, err = f.WriteString(code)
-		if err != nil {
-			return fmt.Errorf("[error] failed output generated code to a file: %w", err)
-		}
-
-		return nil
-	}()
-	if err != nil {
-		log.Fatal(err)
+func writeOutput(path, code string) error {
+	if err := os.WriteFile(path, []byte(code), 0644); err != nil {
+		return fmt.Errorf("failed to write generated code: %w", err)
 	}
+	return nil
 }
 
 func getConstructorTypes(constructorTypes string) ([]string, error) {

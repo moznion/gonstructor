@@ -10,7 +10,7 @@ check-ci: test vet fmt-check
 build4test: clean
 	mkdir -p $(RELEASE_DIR)
 	go build -ldflags "-X $(INTERNAL_PACKAGE).rev=$(REVISION) -X $(INTERNAL_PACKAGE).ver=TESTING" \
-		-o $(RELEASE_DIR)/gonstructor_test cmd/gonstructor/gonstructor.go
+		-o $(RELEASE_DIR)/gonstructor_test ./cmd/gonstructor
 
 gen4test: build4test
 	go generate $(PKGS)

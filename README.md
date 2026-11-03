@@ -198,6 +198,50 @@ func NewStructure(
 }
 ```
 
+## Batch generation
+
+Use `-batch` to generate constructors for several packages in one invocation:
+
+```sh
+gonstructor -batch constructors.json
+```
+
+The manifest contains generation jobs. Each job has a working directory and the
+same argument array used by the single-command CLI:
+
+```json
+{
+  "jobs": [
+    {
+      "directory": "service",
+      "args": ["-type", "Service", "-output", "constructor_gen.go"]
+    },
+    {
+      "directory": "worker",
+      "args": ["-type", "Worker", "-constructorTypes", "allArgs,builder", "-output", "constructor_gen.go"]
+    }
+  ]
+}
+```
+
+Directories are relative to the manifest file, independent of the caller's
+working directory. Relative output paths and package arguments are relative to
+each job's directory. All jobs must be discoverable from the manifest's Go module
+or workspace. Batch jobs accept a single package directory (default
+`.`); import paths, file lists, and patterns such as `./...` remain available
+through the single-command CLI.
+
+The batch discovers all selected packages together, parses each package's files
+once, and runs goimports in each job's directory so package-local import aliases
+resolve as they do for individual commands. Existing constructor flags and
+per-job generated headers are preserved. Jobs must have distinct output files.
+All jobs are validated and rendered before any outputs are replaced; filesystem
+write failures can still leave a partially written batch.
+
+Package discovery only requests names and file lists. Constructor fields,
+initializers, and getters are derived from the source AST without compiling or
+type-checking application dependencies.
+
 ## How to ignore to contain a field in a constructor
 
 `gonstructor:"-"` supports that.
@@ -277,6 +321,27 @@ func NewStruct(foo string) Struct {
 	return Struct{foo: foo}
 }
 ```
+
+## Performance benchmarks
+
+Run the package-discovery and generation benchmarks with:
+
+```sh
+go test ./internal ./cmd/gonstructor -run '^$' -bench . -benchmem -benchtime=1x -count=5
+```
+
+Package discovery compares names/files-only loading with the previous syntax and
+type-loading mode. Generation compares individual calls with a batch for 1, 10,
+and 50 package directories, including discovery, parsing, formatting, and writing
+all output files on every iteration. The individual calls use the current lighter
+loader, so this comparison isolates the additional benefit from batching.
+
+Fixtures, warmup, and byte-for-byte output checks happen outside the timed
+sections. Normal Go build caches remain enabled; no generated-output cache is
+used. Allocation counts cover the benchmark process, excluding child processes
+such as `go list` and `goimports`. Generation runs in-process and excludes CLI
+startup and binary compilation. Run without competing build workloads and compare
+multiple samples; timings are measurements, not pass/fail thresholds.
 
 ## How to build binaries
 

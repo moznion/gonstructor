@@ -6,7 +6,7 @@ before:
 
 builds:
   -
-    main: ./cmd/gonstructor/gonstructor.go
+    main: ./cmd/gonstructor
     ldflags:
     - "-X github.com/moznion/gonstructor/internal.rev={{ .FullCommit }}"
     - "-X github.com/moznion/gonstructor/internal.ver={{ .Version }}"
