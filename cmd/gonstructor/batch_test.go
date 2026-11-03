@@ -18,7 +18,7 @@ func batchFixture(t *testing.T) string {
 	return root
 }
 
-func writeFixture(t *testing.T, path, source string) {
+func writeFixture(t testing.TB, path, source string) {
 	t.Helper()
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		t.Fatal(err)

@@ -322,6 +322,27 @@ func NewStruct(foo string) Struct {
 }
 ```
 
+## Performance benchmarks
+
+Run the package-discovery and generation benchmarks with:
+
+```sh
+go test ./internal ./cmd/gonstructor -run '^$' -bench . -benchmem -benchtime=1x -count=5
+```
+
+Package discovery compares names/files-only loading with the previous syntax and
+type-loading mode. Generation compares individual calls with a batch for 1, 10,
+and 50 package directories, including discovery, parsing, formatting, and writing
+all output files on every iteration. The individual calls use the current lighter
+loader, so this comparison isolates the additional benefit from batching.
+
+Fixtures, warmup, and byte-for-byte output checks happen outside the timed
+sections. Normal Go build caches remain enabled; no generated-output cache is
+used. Allocation counts cover the benchmark process, excluding child processes
+such as `go list` and `goimports`. Generation runs in-process and excludes CLI
+startup and binary compilation. Run without competing build workloads and compare
+multiple samples; timings are measurements, not pass/fail thresholds.
+
 ## How to build binaries
 
 Binaries are built and uploaded by [goreleaser](https://goreleaser.com/). Please refer to the configuration file: [.goreleaser.yml](./.goreleaser.yml)
