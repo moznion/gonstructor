@@ -198,6 +198,50 @@ func NewStructure(
 }
 ```
 
+## Batch generation
+
+Use `-batch` to generate constructors for several packages in one invocation:
+
+```sh
+gonstructor -batch constructors.json
+```
+
+The manifest contains generation jobs. Each job has a working directory and the
+same argument array used by the single-command CLI:
+
+```json
+{
+  "jobs": [
+    {
+      "directory": "service",
+      "args": ["-type", "Service", "-output", "constructor_gen.go"]
+    },
+    {
+      "directory": "worker",
+      "args": ["-type", "Worker", "-constructorTypes", "allArgs,builder", "-output", "constructor_gen.go"]
+    }
+  ]
+}
+```
+
+Directories are relative to the manifest file, independent of the caller's
+working directory. Relative output paths and package arguments are relative to
+each job's directory. All jobs must be discoverable from the manifest's Go module
+or workspace. Batch jobs accept a single package directory (default
+`.`); import paths, file lists, and patterns such as `./...` remain available
+through the single-command CLI.
+
+The batch discovers all selected packages together, parses each package's files
+once, and runs goimports in each job's directory so package-local import aliases
+resolve as they do for individual commands. Existing constructor flags and
+per-job generated headers are preserved. Jobs must have distinct output files.
+All jobs are validated and rendered before any outputs are replaced; filesystem
+write failures can still leave a partially written batch.
+
+Package discovery only requests names and file lists. Constructor fields,
+initializers, and getters are derived from the source AST without compiling or
+type-checking application dependencies.
+
 ## How to ignore to contain a field in a constructor
 
 `gonstructor:"-"` supports that.
